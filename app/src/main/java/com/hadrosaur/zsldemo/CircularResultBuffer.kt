@@ -12,8 +12,9 @@ class CircularResultBuffer {
     val buffer: ArrayDeque<TotalCaptureResult> = ArrayDeque(CIRCULAR_BUFFER_SIZE)
 
     fun add(result: TotalCaptureResult) {
-        if (CIRCULAR_BUFFER_SIZE <= buffer.size)
+        if (CIRCULAR_BUFFER_SIZE <= buffer.size) {
             buffer.removeLast()
+        }
 
         buffer.add(result)
     }

@@ -3,6 +3,7 @@ package com.hadrosaur.zsldemo
 import android.hardware.camera2.CaptureResult
 import android.hardware.camera2.TotalCaptureResult
 import android.media.Image
+import com.hadrosaur.zsldemo.MainActivity.Companion.Logd
 
 class ZSLPair (val image: Image, val result: TotalCaptureResult){
 }
@@ -25,5 +26,16 @@ class ZSLCoordinator {
         }
 
         return null
+    }
+
+    fun capturePhoto() {
+        val bestPair: ZSLPair? = getBestFrame()
+
+        if (bestPair != null) {
+            Logd("HOORAY it actually worked!")
+        } else {
+            //Do regular capture
+            Logd("No best frame. Doing regular capture.")
+        }
     }
 }

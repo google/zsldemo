@@ -13,6 +13,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProviders
 import com.hadrosaur.zsldemo.CameraController.camera2OpenCamera
+import com.hadrosaur.zsldemo.CameraController.closeCamera
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,6 +36,10 @@ class MainActivity : AppCompatActivity() {
 
         if (checkCameraPermissions()) {
             setupCameraParams(this, camViewModel.getCameraParams())
+
+            button_capture.setOnClickListener {
+                camViewModel.getZSLCoordinator().capturePhoto()
+            }
         }
     }
 
@@ -80,6 +86,7 @@ class MainActivity : AppCompatActivity() {
         params.backgroundThread?.quitSafely()
         try {
             params.backgroundThread?.join()
+            params.backgroundThread = null
         } catch (e: InterruptedException) {
             Logd( "Interrupted while shutting background thread down: " + e.message)
         }
@@ -88,9 +95,14 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         startBackgroundThread(camViewModel.getCameraParams())
+        if (camViewModel.getCameraParams().previewTextureView?.isAvailable == true
+            && !camViewModel.getCameraParams().isOpen) {
+            camera2OpenCamera(this, camViewModel.getCameraParams())
+        }
     }
 
     override fun onPause() {
+        closeCamera(this, camViewModel.getCameraParams())
         stopBackgroundThread(camViewModel.getCameraParams())
         super.onPause()
     }

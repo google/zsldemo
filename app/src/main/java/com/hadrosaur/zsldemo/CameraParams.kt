@@ -19,6 +19,8 @@ class CameraParams {
     var device: CameraDevice? = null
     var characteristics: CameraCharacteristics? = null
 
+    var isOpen = false
+
     var cameraDeviceStateCallback: CameraDeviceStateCallback? = null
     var previewSessionCallback: PreviewSessionCallback? = null
 
@@ -48,12 +50,14 @@ fun setupCameraParams(activity: MainActivity, params: CameraParams) {
     params.apply {
         try {
             //Default to the first camera, which will normally be "0" (Rear)
-            //For devices with no rear camera, like many chromebooks, this will probably be "1" (Front)
-            //This program cannot handle devices with no camera
-            for (cameraId in manager.cameraIdList) {
-                id = cameraId
+            id = "0"
+            if (!manager.cameraIdList.contains("0")) {
+                //For devices with no rear camera, like many chromebooks, this will probably be "1" (Front)
+                //This program cannot handle devices with no camera
+                for (cameraId in manager.cameraIdList) {
+                    id = cameraId
+                }
             }
-
         } catch (accessError: CameraAccessException) {
             accessError.printStackTrace()
         }
@@ -75,6 +79,7 @@ fun setupCameraParams(activity: MainActivity, params: CameraParams) {
                 CompareSizesByArea())
 
             Logd("Max width: " + maxSize.width + " Max height: " + maxSize.height)
+            Logd("Min width: " + minSize.width + " Min height: " + minSize.height)
 
             setupImageReaders(activity, params)
         } //if map != null
@@ -89,10 +94,10 @@ fun setupImageReaders(activity: MainActivity, params: CameraParams) {
         params.privateImageReader?.close()
         params.recaptureImageWriter?.close()
         jpegImageReader = ImageReader.newInstance(maxSize.width, maxSize.height,
-            ImageFormat.JPEG, /*maxImages*/1)
+            ImageFormat.JPEG, /*maxImages*/CIRCULAR_BUFFER_SIZE + 1)
         privateImageReader = ImageReader.newInstance(maxSize.width, maxSize.height,
-            ImageFormat.PRIVATE, /*maxImages*/1)
-        recaptureImageWriter = ImageWriter.newInstance(privateImageReader?.surface, 1)
+            ImageFormat.PRIVATE, /*maxImages*/CIRCULAR_BUFFER_SIZE + 1)
+//        recaptureImageWriter = ImageWriter.newInstance(privateImageReader?.surface, 1)
 
         privateImageReader?.setOnImageAvailableListener(
             captureImageAvailableListener, backgroundHandler)

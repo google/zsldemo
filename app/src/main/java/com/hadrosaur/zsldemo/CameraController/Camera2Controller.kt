@@ -27,6 +27,8 @@ fun camera2OpenCamera(activity: MainActivity, params: CameraParams) {
         Logd("openCamera SecurityException: " + params.id)
         e.printStackTrace()
     }
+
+    params.isOpen = true
 }
 
 //TODO: implement preview session from BasicBokeh
@@ -62,7 +64,9 @@ fun closeCamera(activity: MainActivity, params: CameraParams?) {
     if (null == params)
         return
 
+    params.captureSession?.close()
     params.device?.close()
+    params.isOpen = false
 }
 
 
