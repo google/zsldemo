@@ -17,28 +17,27 @@ class CircularImageBuffer {
             buffer.removeLast().close()
         }
 
-        buffer.add(image)
+        buffer.addFirst(image)
     }
 
     fun findMatchingImage(result: TotalCaptureResult) : Image {
         val timestamp: Long? = result.get(CaptureResult.SENSOR_TIMESTAMP)
 
-        //If the best result has no timestamp, we cannot match, return the first image in buffer
-        if (timestamp == null)
-            return buffer.first
-
-        //Look through the buffer for the image that matches
-        for (image in buffer) {
-            Logd("Checking timestamp: " + image.timestamp)
-            if (image.timestamp == timestamp) {
-                return image
+        if (timestamp != null) {
+            //Look through the buffer for the image that matches
+            for (image in buffer) {
+                if (image.timestamp == timestamp) {
+                    return image
+                }
             }
         }
 
-        MainActivity.Logd("This did NOT work, cannot find timestamp: " + timestamp)
-
-        //If we didn't find the matching image, just return the latest one
-        return buffer.first
+        //If we didn't find the matching image, or there is no timestamp just return one
+        //Note: we pick the 3rd newest if we have it to account for the finger press causing capture to be unfocused
+        if (buffer.size >= 3)
+            return buffer.elementAt(2)
+        else
+            return buffer.first
     }
 
 

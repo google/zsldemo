@@ -2,6 +2,7 @@ package com.hadrosaur.zsldemo
 
 import android.hardware.camera2.CaptureResult
 import android.hardware.camera2.TotalCaptureResult
+import com.hadrosaur.zsldemo.MainActivity.Companion.Logd
 import java.util.*
 
 // When users presses the screen, there will probably be a wiggle
@@ -16,33 +17,32 @@ class CircularResultBuffer {
             buffer.removeLast()
         }
 
-        buffer.add(result)
+        buffer.addFirst(result)
     }
 
     //Returns null if no good frame
     fun findBestFrame() : TotalCaptureResult? {
-        val iter = buffer.iterator()
+        val resultArray = arrayOfNulls<TotalCaptureResult>(buffer.size)
+        buffer.toArray(resultArray)
         var bestFrame: TotalCaptureResult? = null
         var backupFrame: TotalCaptureResult? = null
-        var iterCount = 0
 
         // We want frame 3-10, if they are good (AF/AE converged)
         // If no good frames in that range, we're ok with frame 2 or 1 if they seem ok
-        while (iter.hasNext()) {
-            val tempFrame = iter.next()
+        for (i in 0 until resultArray.size) {
+            if (resultArray[i] == null)
+                continue
 
-            if (iterCount < FRAMES_TO_SKIP) {
-                if (isResultGood(tempFrame))
-                    backupFrame = tempFrame
-
+            if (i < FRAMES_TO_SKIP) {
+                if (isResultGood(resultArray[i]!!)) {
+                    backupFrame = resultArray[i]!!
+                }
             } else {
-                if (isResultGood(tempFrame)) {
-                    bestFrame = tempFrame
+                if (isResultGood(resultArray[i]!!)) {
+                    bestFrame = resultArray[i]!!
                     break
                 }
             }
-
-            iterCount++
         }
 
         if (null != bestFrame)
@@ -51,16 +51,24 @@ class CircularResultBuffer {
         if (null != backupFrame)
             return backupFrame
 
-        // Otherwise there are no good frames so we fall back to regular capture
-        // Note: we may wish to just choose frame 3 instead of falling back to regular capture in this case to provide
-        // consistent capture latency for the user. The exception being if we know we need flash.
-        return null
+        Logd("Could not find focused frame 1-10. Falling back to regular capture.")
+
+        //If we didn't find the matching image, or there is no timestamp just return one
+        //Note: we pick the 3rd newest if we have it to account for the finger press causing capture to be unfocused
+        //TODO: Add check for flash
+        if (buffer.size >= 3)
+            return buffer.elementAt(2)
+        else
+            return buffer.first
     }
 
     //We think a frame is good if it's AF is focused and AE is converged and we don't need flash
     fun isResultGood(result: TotalCaptureResult) : Boolean {
         val afState = result.get(CaptureResult.CONTROL_AF_STATE)
         val aeState = result.get(CaptureResult.CONTROL_AE_STATE)
+
+//        Logd("Auto-Focus State: " + afState)
+//        Logd("Auto-Exposure State: " + aeState)
 
         //Need AF state to be focused and AE state converged
         if ( (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED || afState == CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED)

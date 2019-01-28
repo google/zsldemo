@@ -5,6 +5,7 @@ import android.media.Image
 import android.media.ImageReader
 import android.os.Build
 import android.util.Log
+import com.hadrosaur.zsldemo.MainActivity.Companion.Logd
 import com.hadrosaur.zsldemo.MainActivity.Companion.camViewModel
 
 class CaptureImageAvailableListener(private val activity: MainActivity, internal var params: CameraParams) : ImageReader.OnImageAvailableListener {
@@ -20,7 +21,7 @@ class SaveImageAvailableListener(private val activity: MainActivity, internal va
     override fun onImageAvailable(reader: ImageReader) {
 
         val image: Image = reader.acquireNextImage()
-
+        Logd("HOLY TOLEDO! We got a JPG image!!!!")
 
 
         image.close()

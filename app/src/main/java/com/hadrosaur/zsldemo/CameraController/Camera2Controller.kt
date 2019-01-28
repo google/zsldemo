@@ -1,16 +1,21 @@
 package com.hadrosaur.zsldemo.CameraController
 
 import android.content.Context
+import android.graphics.ImageFormat
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraDevice
 import android.hardware.camera2.CameraManager
+import android.hardware.camera2.params.InputConfiguration
 import android.hardware.camera2.params.OutputConfiguration
 import android.hardware.camera2.params.SessionConfiguration
+import android.media.ImageWriter
 import android.os.Build
+import android.renderscript.ScriptGroup
 import android.view.Surface
 import com.hadrosaur.zsldemo.CameraParams
 import com.hadrosaur.zsldemo.MainActivity
 import com.hadrosaur.zsldemo.MainActivity.Companion.Logd
+import com.hadrosaur.zsldemo.ZSLPair
 import java.util.*
 
 fun camera2OpenCamera(activity: MainActivity, params: CameraParams) {
@@ -31,7 +36,6 @@ fun camera2OpenCamera(activity: MainActivity, params: CameraParams) {
     params.isOpen = true
 }
 
-//TODO: implement preview session from BasicBokeh
 fun createCameraPreviewSession(activity: MainActivity, camera: CameraDevice, params: CameraParams) {
     try {
         val texture = params.previewTextureView?.surfaceTexture
@@ -43,6 +47,7 @@ fun createCameraPreviewSession(activity: MainActivity, camera: CameraDevice, par
 
         val previewSurface = Surface(texture)
         val privateImageReaderSurface = params.privateImageReader?.surface
+        val jpegImageReaderSurface = params.jpegImageReader?.surface
 
         params.previewBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
         params.previewBuilder?.addTarget(previewSurface)
@@ -59,6 +64,11 @@ fun createCameraPreviewSession(activity: MainActivity, camera: CameraDevice, par
     }
 }
 
+fun createRecaptureSession(activity: MainActivity, params: CameraParams, zslPair: ZSLPair) {
+    params.recaptureBuilder = params.device?.createReprocessCaptureRequest(zslPair.result)
+    params.device?.createReprocessableCaptureSession(InputConfiguration(params.maxSize.width, params.maxSize.height, ImageFormat.PRIVATE),
+        Arrays.asList(params.jpegImageReader?.surface), RecaptureSessionStateCallback(activity, params, zslPair.image), params.backgroundHandler)
+}
 
 fun closeCamera(activity: MainActivity, params: CameraParams?) {
     if (null == params)

@@ -72,8 +72,13 @@ fun setupCameraParams(activity: MainActivity, params: CameraParams) {
         //Get image capture sizes
         val map = characteristics?.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
         if (map != null) {
+            maxSize = Collections.max(
+                Arrays.asList(*map.getOutputSizes(ImageFormat.PRIVATE)),
+                CompareSizesByArea())
+
             //Camera devices can only support up to 1920x1080 with PRIVATE and preview
-            maxSize = chooseSmallEnoughSize(map.getOutputSizes(ImageFormat.PRIVATE), 1920, 1080)
+//            maxSize = chooseSmallEnoughSize(map.getOutputSizes(ImageFormat.PRIVATE), 1920, 1080)
+
             minSize = Collections.min(
                 Arrays.asList(*map.getOutputSizes(ImageFormat.PRIVATE)),
                 CompareSizesByArea())

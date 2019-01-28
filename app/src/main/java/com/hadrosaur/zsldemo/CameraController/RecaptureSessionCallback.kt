@@ -4,10 +4,8 @@ import android.hardware.camera2.*
 import android.view.Surface
 import com.hadrosaur.zsldemo.CameraParams
 import com.hadrosaur.zsldemo.MainActivity
-import com.hadrosaur.zsldemo.MainActivity.Companion.Logd
-import com.hadrosaur.zsldemo.MainActivity.Companion.camViewModel
 
-class PreviewSessionCallback(val activity: MainActivity, internal var params: CameraParams) : CameraCaptureSession.CaptureCallback() {
+class RecaptureSessionCallback(val activity: MainActivity, internal var params: CameraParams) : CameraCaptureSession.CaptureCallback() {
     override fun onCaptureSequenceAborted(session: CameraCaptureSession, sequenceId: Int) {
         super.onCaptureSequenceAborted(session, sequenceId)
     }
@@ -17,9 +15,6 @@ class PreviewSessionCallback(val activity: MainActivity, internal var params: Ca
         request: CaptureRequest,
         result: TotalCaptureResult
     ) {
-        //TODO: how can we tell if this is a preview result or a image result
-
-        camViewModel.getZSLCoordinator().resultBuffer.add(result)
         super.onCaptureCompleted(session, request, result)
     }
 
@@ -56,4 +51,5 @@ class PreviewSessionCallback(val activity: MainActivity, internal var params: Ca
     ) {
         super.onCaptureBufferLost(session, request, target, frameNumber)
     }
+
 }

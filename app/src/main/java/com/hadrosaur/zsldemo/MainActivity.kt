@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
             setupCameraParams(this, camViewModel.getCameraParams())
 
             button_capture.setOnClickListener {
-                camViewModel.getZSLCoordinator().capturePhoto()
+                camViewModel.getZSLCoordinator().capturePhoto(this, camViewModel.getCameraParams())
             }
         }
     }
