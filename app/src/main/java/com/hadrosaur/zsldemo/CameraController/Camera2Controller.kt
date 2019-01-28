@@ -66,8 +66,6 @@ fun createCameraPreviewSession(activity: MainActivity, camera: CameraDevice, par
 fun createRecaptureSession(activity: MainActivity, params: CameraParams, zslPair: ZSLPair) {
     val jpegImageReaderSurface = params.jpegImageReader?.surface
 
-    params.captureSession?.close()
-
     params.recaptureBuilder = params.device?.createReprocessCaptureRequest(zslPair.result)
     params.recaptureBuilder?.addTarget(jpegImageReaderSurface)
 
