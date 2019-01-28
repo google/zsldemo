@@ -22,7 +22,9 @@ class SaveImageAvailableListener(private val activity: MainActivity, internal va
 
         val image: Image = reader.acquireNextImage()
         Logd("HOLY TOLEDO! We got a JPG image!!!!")
-
+        val bytes = ByteArray(image.planes[0].buffer.remaining())
+        image.planes[0].buffer.get(bytes)
+        WriteFile(activity, bytes)
 
         image.close()
     }

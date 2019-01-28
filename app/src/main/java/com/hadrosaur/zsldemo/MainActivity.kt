@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     private val REQUEST_CAMERA_PERMISSION = 1
+    private val REQUEST_FILE_WRITE_PERMISSION = 2
 
     companion object {
         private val LOG_TAG = "ZSLDemo"
@@ -52,7 +53,16 @@ class MainActivity : AppCompatActivity() {
                 arrayOf(Manifest.permission.CAMERA),
                 REQUEST_CAMERA_PERMISSION)
             return false
+
+        } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            !== PackageManager.PERMISSION_GRANTED) {
+            // No explanation needed; request the permission
+            ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                REQUEST_FILE_WRITE_PERMISSION)
+            return false
         }
+
         return true
     }
 
@@ -60,6 +70,17 @@ class MainActivity : AppCompatActivity() {
                                             permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
             REQUEST_CAMERA_PERMISSION -> {
+                if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //We now have permission, restart the app
+                    val intent = getIntent()
+                    finish()
+                    startActivity(intent)
+                } else {
+                }
+                return
+            }
+            REQUEST_FILE_WRITE_PERMISSION -> {
+                // If request is cancelled, the result arrays are empty.
                 if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //We now have permission, restart the app
                     val intent = getIntent()
