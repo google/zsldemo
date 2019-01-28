@@ -116,7 +116,7 @@ fun setupImageReaders(activity: MainActivity, params: CameraParams) {
             ImageFormat.JPEG, /*maxImages*/CIRCULAR_BUFFER_SIZE + 1)
         privateImageReader = ImageReader.newInstance(maxSize.width, maxSize.height,
             ImageFormat.PRIVATE, /*maxImages*/CIRCULAR_BUFFER_SIZE + 1)
-//        recaptureImageWriter = ImageWriter.newInstance(privateImageReader?.surface, 1)
+ //       recaptureImageWriter = ImageWriter.newInstance(privateImageReader?.surface, 1)
 
         privateImageReader?.setOnImageAvailableListener(
             captureImageAvailableListener, backgroundHandler)

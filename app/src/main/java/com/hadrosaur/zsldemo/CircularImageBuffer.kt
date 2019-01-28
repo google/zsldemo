@@ -40,5 +40,8 @@ class CircularImageBuffer {
             return buffer.first
     }
 
+    fun remove(image: Image) {
+        buffer.remove(image)
+    }
 
 }

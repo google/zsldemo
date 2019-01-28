@@ -47,14 +47,16 @@ fun createCameraPreviewSession(activity: MainActivity, camera: CameraDevice, par
 
         val previewSurface = Surface(texture)
         val privateImageReaderSurface = params.privateImageReader?.surface
+        val jpegImageReaderSurface = params.jpegImageReader?.surface
 
-        params.previewBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
+        params.previewBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE)
         params.previewBuilder?.addTarget(previewSurface)
         params.previewBuilder?.addTarget(privateImageReaderSurface)
 
-        camera.createCaptureSession(
-            Arrays.asList(previewSurface, privateImageReaderSurface),
+        camera.createReprocessableCaptureSession(InputConfiguration(params.maxSize.width, params.maxSize.height, ImageFormat.PRIVATE),
+            Arrays.asList(previewSurface, privateImageReaderSurface, jpegImageReaderSurface),
             PreviewSessionStateCallback(activity, params), params.backgroundHandler)
+
 
     } catch (e: CameraAccessException) {
         e.printStackTrace()
@@ -63,14 +65,15 @@ fun createCameraPreviewSession(activity: MainActivity, camera: CameraDevice, par
     }
 }
 
-fun createRecaptureSession(activity: MainActivity, params: CameraParams, zslPair: ZSLPair) {
-    val jpegImageReaderSurface = params.jpegImageReader?.surface
+fun recaptureRequest(activity: MainActivity, params: CameraParams, zslPair: ZSLPair) {
 
+    val jpegImageReaderSurface = params.jpegImageReader?.surface
     params.recaptureBuilder = params.device?.createReprocessCaptureRequest(zslPair.result)
     params.recaptureBuilder?.addTarget(jpegImageReaderSurface)
+    //TODO: after calling this, we should remove the pair from the buffers as the image is no longer accessible
+    params.recaptureImageWriter?.queueInputImage(zslPair.image)
+    params.captureSession?.capture(params.recaptureBuilder?.build(), RecaptureSessionCallback(activity, params), params.backgroundHandler)
 
-    params.device?.createReprocessableCaptureSession(InputConfiguration(params.maxSize.width, params.maxSize.height, ImageFormat.PRIVATE),
-        Arrays.asList(params.jpegImageReader?.surface), RecaptureSessionStateCallback(activity, params, zslPair.image), params.backgroundHandler)
 }
 
 fun closeCamera(activity: MainActivity, params: CameraParams?) {

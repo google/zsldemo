@@ -17,8 +17,6 @@ class PreviewSessionCallback(val activity: MainActivity, internal var params: Ca
         request: CaptureRequest,
         result: TotalCaptureResult
     ) {
-        //TODO: how can we tell if this is a preview result or a image result
-
         camViewModel.getZSLCoordinator().resultBuffer.add(result)
         super.onCaptureCompleted(session, request, result)
     }

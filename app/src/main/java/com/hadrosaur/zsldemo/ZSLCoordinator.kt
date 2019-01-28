@@ -4,7 +4,7 @@ import android.hardware.camera2.CaptureResult
 import android.hardware.camera2.TotalCaptureResult
 import android.media.Image
 import android.util.Log
-import com.hadrosaur.zsldemo.CameraController.createRecaptureSession
+import com.hadrosaur.zsldemo.CameraController.recaptureRequest
 import com.hadrosaur.zsldemo.MainActivity.Companion.Logd
 
 class ZSLPair (val image: Image, val result: TotalCaptureResult){
@@ -39,7 +39,12 @@ class ZSLCoordinator {
 
         if (bestPair != null) {
             Logd("Found a good image/result pair. Doing recapture and saving to disk!")
-            createRecaptureSession(activity, params, bestPair)
+            recaptureRequest(activity, params, bestPair)
+
+            //Now remove the bestPair from the buffer so we don't try to access the image again
+            imageBuffer.remove(bestPair.image)
+            resultBuffer.remove(bestPair.result)
+
         } else {
             //Do regular capture
             Logd("No best frame found. Fallback to regular capture.")

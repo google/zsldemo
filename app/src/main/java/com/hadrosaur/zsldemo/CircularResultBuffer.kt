@@ -78,4 +78,8 @@ class CircularResultBuffer {
 
         return false
     }
+
+    fun remove(result: TotalCaptureResult) {
+        buffer.remove(result)
+    }
 }

@@ -3,6 +3,7 @@ package com.hadrosaur.zsldemo.CameraController
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCaptureSession
 import android.hardware.camera2.CaptureRequest
+import android.media.ImageWriter
 import android.os.Build
 import androidx.annotation.NonNull
 import com.hadrosaur.zsldemo.CameraParams
@@ -31,6 +32,8 @@ class PreviewSessionStateCallback(val activity: MainActivity, val params: Camera
             params.captureSession = cameraCaptureSession
             params.previewSessionCallback = PreviewSessionCallback(activity, params)
 //            params.state = STATE_PREVIEW
+
+            params.recaptureImageWriter = ImageWriter.newInstance(params.captureSession?.inputSurface, 1)
 
             params.captureSession?.setRepeatingRequest(params.previewBuilder?.build(),
                 params.previewSessionCallback, params.backgroundHandler)
