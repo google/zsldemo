@@ -69,6 +69,15 @@ fun setupCameraParams(activity: MainActivity, params: CameraParams) {
         captureImageAvailableListener = CaptureImageAvailableListener(activity, params)
         saveImageAvailableListener = SaveImageAvailableListener(activity, params)
 
+        var canReprocess = false
+        val cameraCapabilities = manager.getCameraCharacteristics(id).get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES)
+        for (capability in cameraCapabilities) {
+            when (capability) {
+                CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_PRIVATE_REPROCESSING -> canReprocess = true
+            }
+        }
+  //      Logd("Camera can reprocess: " + canReprocess)
+
         //Get image capture sizes
         val map = characteristics?.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
         if (map != null) {
@@ -86,6 +95,10 @@ fun setupCameraParams(activity: MainActivity, params: CameraParams) {
             Logd("Max width: " + maxSize.width + " Max height: " + maxSize.height)
             Logd("Min width: " + minSize.width + " Min height: " + minSize.height)
 
+//            for (size in map.getOutputSizes(ImageFormat.PRIVATE)) {
+//                Logd("Supported size: " + size.width + "x" + size.height)
+//            }
+
             setupImageReaders(activity, params)
         } //if map != null
 
@@ -98,6 +111,7 @@ fun setupImageReaders(activity: MainActivity, params: CameraParams) {
         params.jpegImageReader?.close()
         params.privateImageReader?.close()
         params.recaptureImageWriter?.close()
+
         jpegImageReader = ImageReader.newInstance(maxSize.width, maxSize.height,
             ImageFormat.JPEG, /*maxImages*/CIRCULAR_BUFFER_SIZE + 1)
         privateImageReader = ImageReader.newInstance(maxSize.width, maxSize.height,
@@ -113,7 +127,6 @@ fun setupImageReaders(activity: MainActivity, params: CameraParams) {
         //We just uses the smallest preview size to avoid this situation
         params.previewTextureView?.surfaceTexture?.setDefaultBufferSize(minSize.width, minSize.height)
         params.previewTextureView?.setAspectRatio(minSize.width, minSize.height)
-//        params.previewTextureView?.surfaceTexture?.setDefaultBufferSize(640, 480)
     }
 
 

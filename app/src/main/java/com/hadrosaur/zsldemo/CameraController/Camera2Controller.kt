@@ -47,7 +47,6 @@ fun createCameraPreviewSession(activity: MainActivity, camera: CameraDevice, par
 
         val previewSurface = Surface(texture)
         val privateImageReaderSurface = params.privateImageReader?.surface
-        val jpegImageReaderSurface = params.jpegImageReader?.surface
 
         params.previewBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
         params.previewBuilder?.addTarget(previewSurface)
@@ -65,7 +64,13 @@ fun createCameraPreviewSession(activity: MainActivity, camera: CameraDevice, par
 }
 
 fun createRecaptureSession(activity: MainActivity, params: CameraParams, zslPair: ZSLPair) {
+    val jpegImageReaderSurface = params.jpegImageReader?.surface
+
+    params.captureSession?.close()
+
     params.recaptureBuilder = params.device?.createReprocessCaptureRequest(zslPair.result)
+    params.recaptureBuilder?.addTarget(jpegImageReaderSurface)
+
     params.device?.createReprocessableCaptureSession(InputConfiguration(params.maxSize.width, params.maxSize.height, ImageFormat.PRIVATE),
         Arrays.asList(params.jpegImageReader?.surface), RecaptureSessionStateCallback(activity, params, zslPair.image), params.backgroundHandler)
 }
