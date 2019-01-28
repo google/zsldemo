@@ -5,6 +5,8 @@ import android.graphics.ImageFormat
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraDevice
 import android.hardware.camera2.CameraManager
+import android.hardware.camera2.CaptureRequest
+import android.hardware.camera2.CaptureRequest.CONTROL_ENABLE_ZSL
 import android.hardware.camera2.params.InputConfiguration
 import android.hardware.camera2.params.OutputConfiguration
 import android.hardware.camera2.params.SessionConfiguration
@@ -49,13 +51,24 @@ fun createCameraPreviewSession(activity: MainActivity, camera: CameraDevice, par
         val privateImageReaderSurface = params.privateImageReader?.surface
         val jpegImageReaderSurface = params.jpegImageReader?.surface
 
-        params.previewBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE)
+        params.previewBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_ZERO_SHUTTER_LAG)
         params.previewBuilder?.addTarget(previewSurface)
         params.previewBuilder?.addTarget(privateImageReaderSurface)
+
+        if (Build.VERSION.SDK_INT >= 26) {
+            if (params.previewBuilder?.get(CONTROL_ENABLE_ZSL) != null)
+                Logd("HOOORAY, supports zsl")
+            else
+                Logd("BOOOO, no zsl")
+        }
 
         camera.createReprocessableCaptureSession(InputConfiguration(params.maxSize.width, params.maxSize.height, ImageFormat.PRIVATE),
             Arrays.asList(previewSurface, privateImageReaderSurface, jpegImageReaderSurface),
             PreviewSessionStateCallback(activity, params), params.backgroundHandler)
+
+//        camera.createCaptureSession(
+//            Arrays.asList(previewSurface, privateImageReaderSurface, jpegImageReaderSurface),
+//            PreviewSessionStateCallback(activity, params), params.backgroundHandler)
 
 
     } catch (e: CameraAccessException) {

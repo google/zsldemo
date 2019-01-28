@@ -42,6 +42,13 @@ class CameraParams {
 
     var minSize: Size = Size(0, 0)
     var maxSize: Size = Size(0, 0)
+
+    var minJpegSize: Size = Size(0, 0)
+    var maxJpegSize: Size = Size(0, 0)
+
+    var minPreviewSize: Size = Size(0, 0)
+    var maxPreviewSize: Size = Size(0, 0)
+
 }
 
 fun setupCameraParams(activity: MainActivity, params: CameraParams) {
@@ -92,6 +99,13 @@ fun setupCameraParams(activity: MainActivity, params: CameraParams) {
                 Arrays.asList(*map.getOutputSizes(ImageFormat.PRIVATE)),
                 CompareSizesByArea())
 
+            maxJpegSize = Collections.max(
+                Arrays.asList(*map.getOutputSizes(ImageFormat.JPEG)),
+                CompareSizesByArea())
+            minJpegSize = Collections.max(
+                Arrays.asList(*map.getOutputSizes(ImageFormat.JPEG)),
+                CompareSizesByArea())
+
             Logd("Max width: " + maxSize.width + " Max height: " + maxSize.height)
             Logd("Min width: " + minSize.width + " Min height: " + minSize.height)
 
@@ -112,16 +126,17 @@ fun setupImageReaders(activity: MainActivity, params: CameraParams) {
         params.privateImageReader?.close()
         params.recaptureImageWriter?.close()
 
-        jpegImageReader = ImageReader.newInstance(maxSize.width, maxSize.height,
+//        jpegImageReader = ImageReader.newInstance(maxJpegSize.width, maxJpegSize.height,
+//            ImageFormat.JPEG, /*maxImages*/CIRCULAR_BUFFER_SIZE + 1)
+
+        jpegImageReader = ImageReader.newInstance(maxJpegSize.width, maxJpegSize.height,
             ImageFormat.JPEG, /*maxImages*/CIRCULAR_BUFFER_SIZE + 1)
+
         privateImageReader = ImageReader.newInstance(maxSize.width, maxSize.height,
             ImageFormat.PRIVATE, /*maxImages*/CIRCULAR_BUFFER_SIZE + 1)
- //       recaptureImageWriter = ImageWriter.newInstance(privateImageReader?.surface, 1)
 
-        privateImageReader?.setOnImageAvailableListener(
-            captureImageAvailableListener, backgroundHandler)
-        jpegImageReader?.setOnImageAvailableListener(
-            saveImageAvailableListener, backgroundHandler)
+        privateImageReader?.setOnImageAvailableListener(captureImageAvailableListener, backgroundHandler)
+        jpegImageReader?.setOnImageAvailableListener(saveImageAvailableListener, backgroundHandler)
 
         //For some cameras, using the max preview size can conflict with big image captures
         //We just uses the smallest preview size to avoid this situation

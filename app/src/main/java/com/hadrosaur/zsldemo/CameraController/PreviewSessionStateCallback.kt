@@ -2,6 +2,7 @@ package com.hadrosaur.zsldemo.CameraController
 
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCaptureSession
+import android.hardware.camera2.CameraMetadata
 import android.hardware.camera2.CaptureRequest
 import android.media.ImageWriter
 import android.os.Build
@@ -29,6 +30,7 @@ class PreviewSessionStateCallback(val activity: MainActivity, val params: Camera
                 CaptureRequest.CONTROL_AF_MODE,
                 CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE)
 
+            params.previewBuilder?.set(CaptureRequest.CONTROL_EFFECT_MODE, CameraMetadata.CONTROL_EFFECT_MODE_SEPIA)
             params.captureSession = cameraCaptureSession
             params.previewSessionCallback = PreviewSessionCallback(activity, params)
 //            params.state = STATE_PREVIEW
