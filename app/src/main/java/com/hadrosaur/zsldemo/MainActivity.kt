@@ -23,10 +23,12 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private val LOG_TAG = "ZSLDemo"
+        private val ENABLE_LOG = true
         lateinit var camViewModel:CamViewModel
 
         fun Logd(message: String) {
-            Log.d(LOG_TAG, message)
+            if (ENABLE_LOG)
+                Log.d(LOG_TAG, message)
         }
     }
 

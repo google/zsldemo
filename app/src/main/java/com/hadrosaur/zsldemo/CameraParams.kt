@@ -9,7 +9,7 @@ import android.os.HandlerThread
 import android.util.Size
 import androidx.appcompat.app.AppCompatActivity
 import com.hadrosaur.zsldemo.CameraController.CameraDeviceStateCallback
-import com.hadrosaur.zsldemo.CameraController.PreviewSessionCallback
+import com.hadrosaur.zsldemo.CameraController.CaptureSessionCallback
 import com.hadrosaur.zsldemo.MainActivity.Companion.Logd
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
@@ -22,7 +22,7 @@ class CameraParams {
     var isOpen = false
 
     var cameraDeviceStateCallback: CameraDeviceStateCallback? = null
-    var previewSessionCallback: PreviewSessionCallback? = null
+    var captureSessionCallback: CaptureSessionCallback? = null
 
     var backgroundThread: HandlerThread? = null
     var backgroundHandler: Handler? = null
@@ -46,9 +46,9 @@ class CameraParams {
     var minJpegSize: Size = Size(0, 0)
     var maxJpegSize: Size = Size(0, 0)
 
-    var minPreviewSize: Size = Size(0, 0)
-    var maxPreviewSize: Size = Size(0, 0)
-
+    //For latency measurements
+    var captureStart: Long = 0
+    var captureEnd: Long = 0
 }
 
 fun setupCameraParams(activity: MainActivity, params: CameraParams) {
@@ -100,10 +100,10 @@ fun setupCameraParams(activity: MainActivity, params: CameraParams) {
                 CompareSizesByArea())
 
             maxJpegSize = Collections.max(
-                Arrays.asList(*map.getOutputSizes(ImageFormat.JPEG)),
+                Arrays.asList(*map.getOutputSizes(ImageFormat.YUV_420_888)),
                 CompareSizesByArea())
             minJpegSize = Collections.max(
-                Arrays.asList(*map.getOutputSizes(ImageFormat.JPEG)),
+                Arrays.asList(*map.getOutputSizes(ImageFormat.YUV_420_888)),
                 CompareSizesByArea())
 
             Logd("Max width: " + maxSize.width + " Max height: " + maxSize.height)
@@ -130,7 +130,7 @@ fun setupImageReaders(activity: MainActivity, params: CameraParams) {
 //            ImageFormat.JPEG, /*maxImages*/CIRCULAR_BUFFER_SIZE + 1)
 
         jpegImageReader = ImageReader.newInstance(maxJpegSize.width, maxJpegSize.height,
-            ImageFormat.JPEG, /*maxImages*/CIRCULAR_BUFFER_SIZE + 1)
+            ImageFormat.YUV_420_888, /*maxImages*/CIRCULAR_BUFFER_SIZE + 1)
 
         privateImageReader = ImageReader.newInstance(maxSize.width, maxSize.height,
             ImageFormat.PRIVATE, /*maxImages*/CIRCULAR_BUFFER_SIZE + 1)

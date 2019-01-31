@@ -9,7 +9,7 @@ class CameraDeviceStateCallback(internal val activity: MainActivity, internal va
     override fun onOpened(@NonNull cameraDevice: CameraDevice) {
         MainActivity.Logd("In CameraStateCallback onOpened: " + cameraDevice.id)
         params.device = cameraDevice
-        createCameraPreviewSession(activity, cameraDevice, params)
+        createCameraCaptureSession(activity, cameraDevice, params)
     }
 
     override fun onClosed(camera: CameraDevice?) {

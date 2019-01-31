@@ -13,17 +13,17 @@ class TextureListener(internal val activity: MainActivity, internal var params: 
     }
 
     override fun onSurfaceTextureAvailable(texture: SurfaceTexture, width: Int, height: Int) {
-        Logd("In surfaceTextureAvailable. Id: " + params.id)
+//        Logd("In surfaceTextureAvailable. Id: " + params.id)
         camera2OpenCamera(activity, params)
     }
 
     override fun onSurfaceTextureSizeChanged(texture: SurfaceTexture, width: Int, height: Int) {
-        Logd("In surfaceTextureSizeChanged. Id: " + params.id)
+//        Logd("In surfaceTextureSizeChanged. Id: " + params.id)
 //        rotatePreviewTexture(activity, params, textureView)
     }
 
     override fun onSurfaceTextureDestroyed(texture: SurfaceTexture) : Boolean {
-        Logd("In surfaceTextureDestroyed. Id: " + params.id)
+//        Logd("In surfaceTextureDestroyed. Id: " + params.id)
         closeCamera(activity, params)
         return true
     }

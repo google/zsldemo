@@ -38,7 +38,7 @@ fun camera2OpenCamera(activity: MainActivity, params: CameraParams) {
     params.isOpen = true
 }
 
-fun createCameraPreviewSession(activity: MainActivity, camera: CameraDevice, params: CameraParams) {
+fun createCameraCaptureSession(activity: MainActivity, camera: CameraDevice, params: CameraParams) {
     try {
         val texture = params.previewTextureView?.surfaceTexture
 
@@ -51,25 +51,19 @@ fun createCameraPreviewSession(activity: MainActivity, camera: CameraDevice, par
         val privateImageReaderSurface = params.privateImageReader?.surface
         val jpegImageReaderSurface = params.jpegImageReader?.surface
 
+        //Set up the preview capture request for when the session is ready
         params.previewBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_ZERO_SHUTTER_LAG)
         params.previewBuilder?.addTarget(previewSurface)
         params.previewBuilder?.addTarget(privateImageReaderSurface)
 
-        if (Build.VERSION.SDK_INT >= 26) {
-            if (params.previewBuilder?.get(CONTROL_ENABLE_ZSL) != null)
-                Logd("HOOORAY, supports zsl")
-            else
-                Logd("BOOOO, no zsl")
-        }
-
+        //Create the global capture setting. Note:
+        // [output] - preview surface
+        // [output] - full-quality private format image reader (for ZSL Buffer)
+        // [output] - full-quality jpeg image reader - final output image after reprocessing
+        // [input]  - full-quailty private format image writer (input from ZSL Buffer for reprocessing)
         camera.createReprocessableCaptureSession(InputConfiguration(params.maxSize.width, params.maxSize.height, ImageFormat.PRIVATE),
             Arrays.asList(previewSurface, privateImageReaderSurface, jpegImageReaderSurface),
-            PreviewSessionStateCallback(activity, params), params.backgroundHandler)
-
-//        camera.createCaptureSession(
-//            Arrays.asList(previewSurface, privateImageReaderSurface, jpegImageReaderSurface),
-//            PreviewSessionStateCallback(activity, params), params.backgroundHandler)
-
+            CameraCaptureSessionStateCallback(activity, params), params.backgroundHandler)
 
     } catch (e: CameraAccessException) {
         e.printStackTrace()
@@ -78,14 +72,17 @@ fun createCameraPreviewSession(activity: MainActivity, camera: CameraDevice, par
     }
 }
 
+//We have a good ZSLPair, create the request to reprocess the private image into a jpeg output frame
+//Note: we use the same capture session which is already configured for this, we just need to send off the request
 fun recaptureRequest(activity: MainActivity, params: CameraParams, zslPair: ZSLPair) {
+    params.captureStart = System.currentTimeMillis()
 
     val jpegImageReaderSurface = params.jpegImageReader?.surface
     params.recaptureBuilder = params.device?.createReprocessCaptureRequest(zslPair.result)
     params.recaptureBuilder?.addTarget(jpegImageReaderSurface)
-    //TODO: after calling this, we should remove the pair from the buffers as the image is no longer accessible
+
     params.recaptureImageWriter?.queueInputImage(zslPair.image)
-    params.captureSession?.capture(params.recaptureBuilder?.build(), RecaptureSessionCallback(activity, params), params.backgroundHandler)
+    params.captureSession?.capture(params.recaptureBuilder?.build(), RecaptureRequestCallback(activity, params), params.backgroundHandler)
 
 }
 

@@ -51,7 +51,7 @@ class CircularResultBuffer {
         if (null != backupFrame)
             return backupFrame
 
-        Logd("Could not find focused frame 1-10. Falling back to regular capture.")
+        Logd("CircularResultBuffer: Could not find focused frame 1-10.")
 
         //If we didn't find the matching image, or there is no timestamp just return one
         //Note: we pick the 3rd newest if we have it to account for the finger press causing capture to be unfocused

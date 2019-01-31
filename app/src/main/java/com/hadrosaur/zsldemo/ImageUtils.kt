@@ -20,8 +20,10 @@ class SaveImageAvailableListener(private val activity: MainActivity, internal va
 
     override fun onImageAvailable(reader: ImageReader) {
 
+        params.captureEnd = System.currentTimeMillis()
+
         val image: Image = reader.acquireNextImage()
-        Logd("HOLY TOLEDO! We got a JPG image!!!!")
+        Logd("We got a JPG image!!!! Capture time: " + (params.captureEnd - params.captureStart))
         val bytes = ByteArray(image.planes[0].buffer.remaining())
         image.planes[0].buffer.get(bytes)
         WriteFile(activity, bytes)
