@@ -54,8 +54,11 @@ fun createCameraCaptureSession(activity: MainActivity, camera: CameraDevice, par
         //Set up the preview capture request for when the session is ready
         params.previewBuilder = camera.createCaptureRequest(CameraDevice.TEMPLATE_ZERO_SHUTTER_LAG)
         params.previewBuilder?.addTarget(previewSurface)
-        params.previewBuilder?.addTarget(privateImageReaderSurface)
 
+        if (privateImageReaderSurface != null)
+            params.previewBuilder?.addTarget(privateImageReaderSurface)
+        else
+            Logd("createCameraCaptureSession: privateImageReaderSurface is NULL!")
         //Create the global capture setting. Note:
         // [output] - preview surface
         // [output] - full-quality private format image reader (for ZSL Buffer)
