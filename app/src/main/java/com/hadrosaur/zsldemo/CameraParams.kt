@@ -1,7 +1,24 @@
+/*
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.hadrosaur.zsldemo
 
 import android.graphics.ImageFormat
 import android.hardware.camera2.*
+import android.hardware.camera2.CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL
 import android.media.ImageReader
 import android.media.ImageWriter
 import android.os.Handler
@@ -20,6 +37,7 @@ class CameraParams {
     var characteristics: CameraCharacteristics? = null
 
     var isOpen = false
+    var canReprocess = false
 
     var cameraDeviceStateCallback: CameraDeviceStateCallback? = null
     var captureSessionCallback: CaptureSessionCallback? = null
@@ -76,18 +94,21 @@ fun setupCameraParams(activity: MainActivity, params: CameraParams) {
         captureImageAvailableListener = CaptureImageAvailableListener(activity, params)
         saveImageAvailableListener = SaveImageAvailableListener(activity, params)
 
-        var canReprocess = false
         val cameraCapabilities = manager.getCameraCharacteristics(id).get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES)
         for (capability in cameraCapabilities) {
             when (capability) {
                 CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_PRIVATE_REPROCESSING -> canReprocess = true
             }
         }
-  //      Logd("Camera can reprocess: " + canReprocess)
+        Logd("Camera can reprocess: " + canReprocess)
+        Logd("Supported Hardware Level: " + characteristics?.get(INFO_SUPPORTED_HARDWARE_LEVEL))
 
         //Get image capture sizes
         val map = characteristics?.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
         if (map != null) {
+            Logd("Input formats: " + Arrays.toString(map.inputFormats))
+            Logd("Output formats: " + Arrays.toString(map.outputFormats))
+
             maxSize = Collections.max(
                 Arrays.asList(*map.getOutputSizes(ImageFormat.PRIVATE)),
                 CompareSizesByArea())
@@ -109,9 +130,9 @@ fun setupCameraParams(activity: MainActivity, params: CameraParams) {
             Logd("Max width: " + maxSize.width + " Max height: " + maxSize.height)
             Logd("Min width: " + minSize.width + " Min height: " + minSize.height)
 
-//            for (size in map.getOutputSizes(ImageFormat.PRIVATE)) {
-//                Logd("Supported size: " + size.width + "x" + size.height)
-//            }
+            for (size in map.getOutputSizes(ImageFormat.PRIVATE)) {
+                Logd("Supported size: " + size.width + "x" + size.height)
+            }
 
             setupImageReaders(activity, params)
         } //if map != null
