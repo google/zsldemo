@@ -121,10 +121,10 @@ fun setupCameraParams(activity: MainActivity, params: CameraParams) {
                 CompareSizesByArea())
 
             maxJpegSize = Collections.max(
-                Arrays.asList(*map.getOutputSizes(ImageFormat.YUV_420_888)),
+                Arrays.asList(*map.getOutputSizes(ImageFormat.JPEG)),
                 CompareSizesByArea())
             minJpegSize = Collections.max(
-                Arrays.asList(*map.getOutputSizes(ImageFormat.YUV_420_888)),
+                Arrays.asList(*map.getOutputSizes(ImageFormat.JPEG)),
                 CompareSizesByArea())
 
             Logd("Max width: " + maxSize.width + " Max height: " + maxSize.height)
@@ -151,7 +151,7 @@ fun setupImageReaders(activity: MainActivity, params: CameraParams) {
 //            ImageFormat.JPEG, /*maxImages*/CIRCULAR_BUFFER_SIZE + 1)
 
         jpegImageReader = ImageReader.newInstance(maxJpegSize.width, maxJpegSize.height,
-            ImageFormat.YUV_420_888, /*maxImages*/CIRCULAR_BUFFER_SIZE + 1)
+            ImageFormat.JPEG, /*maxImages*/CIRCULAR_BUFFER_SIZE + 1)
 
         privateImageReader = ImageReader.newInstance(maxSize.width, maxSize.height,
             ImageFormat.PRIVATE, /*maxImages*/CIRCULAR_BUFFER_SIZE + 1)
@@ -164,8 +164,6 @@ fun setupImageReaders(activity: MainActivity, params: CameraParams) {
         params.previewTextureView?.surfaceTexture?.setDefaultBufferSize(minSize.width, minSize.height)
         params.previewTextureView?.setAspectRatio(minSize.width, minSize.height)
     }
-
-
 }
 
 internal class CompareSizesByArea : Comparator<Size> {
