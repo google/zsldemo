@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Copyright 2019 Google LLC
   ~
@@ -14,8 +15,7 @@
   ~ limitations under the License.
   -->
 
-<resources>
-    <string name="app_name">ZSL Demo</string>
-    <string name="menu_delete_photos">Delete photos</string>
-    <string name="button_capture">Capture photo</string>
-</resources>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_delete_photos"
+        android:title="@string/menu_delete_photos" />
+</menu>

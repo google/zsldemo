@@ -24,6 +24,9 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.WindowManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -144,6 +147,22 @@ class MainActivity : AppCompatActivity() {
         closeCamera(this, camViewModel.getCameraParams())
         stopBackgroundThread(camViewModel.getCameraParams())
         super.onPause()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_delete_photos -> {
+                deleteTestPhotos(this)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
 }

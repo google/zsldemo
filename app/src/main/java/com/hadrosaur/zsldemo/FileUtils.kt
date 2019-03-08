@@ -18,6 +18,7 @@ package com.hadrosaur.zsldemo
 
 import android.content.Intent
 import android.graphics.Bitmap
+import android.media.Image
 import android.net.Uri
 import android.os.Environment
 import android.widget.Toast
@@ -30,8 +31,12 @@ import java.util.*
 
 val PHOTOS_DIR = "ZSLDemo"
 
-fun WriteFile(activity: MainActivity, bytes: ByteArray) {
+fun WriteFile(activity: MainActivity, image: Image) {
     val jpgFile = getFileHandle(activity, "ZSLDemo", true)
+
+    val buffer = image.planes[0].buffer
+    val bytes = ByteArray(buffer.remaining())
+    buffer.get(bytes)
 
     var output: FileOutputStream? = null
     try {
@@ -55,6 +60,7 @@ fun WriteFile(activity: MainActivity, bytes: ByteArray) {
         }
     }
 
+    image.close()
     Logd("WriteFile: Completed.")
 }
 

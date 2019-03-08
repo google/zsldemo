@@ -35,6 +35,7 @@ import com.hadrosaur.zsldemo.CameraParams
 import com.hadrosaur.zsldemo.MainActivity
 import com.hadrosaur.zsldemo.MainActivity.Companion.Logd
 import com.hadrosaur.zsldemo.ZSLPair
+import java.lang.Thread.sleep
 import java.util.*
 
 fun camera2OpenCamera(activity: MainActivity, params: CameraParams) {
@@ -114,6 +115,11 @@ fun recaptureRequest(activity: MainActivity, params: CameraParams, zslPair: ZSLP
     params.recaptureImageWriter?.queueInputImage(zslPair.image)
     params.captureSession?.capture(params.recaptureBuilder?.build(), RecaptureRequestCallback(activity, params), params.backgroundHandler)
 
+}
+
+fun stopRepeating(params: CameraParams) {
+    params.captureSession?.stopRepeating()
+    sleep(1000)
 }
 
 fun closeCamera(activity: MainActivity, params: CameraParams?) {

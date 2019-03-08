@@ -22,6 +22,7 @@ import com.hadrosaur.zsldemo.CameraParams
 import com.hadrosaur.zsldemo.MainActivity
 import com.hadrosaur.zsldemo.MainActivity.Companion.Logd
 import com.hadrosaur.zsldemo.MainActivity.Companion.camViewModel
+import com.hadrosaur.zsldemo.ZSLPair
 
 class CaptureSessionCallback(val activity: MainActivity, internal var params: CameraParams) : CameraCaptureSession.CaptureCallback() {
     override fun onCaptureCompleted(
@@ -30,6 +31,17 @@ class CaptureSessionCallback(val activity: MainActivity, internal var params: Ca
         result: TotalCaptureResult
     ) {
         camViewModel.getZSLCoordinator().resultBuffer.add(result)
+
+        if (null == params.debugResult || null == params.debugImage) {
+            if (null != params.debugImage) {
+                params.debugResult = result
+                val tempPair = ZSLPair(params.debugImage!!, result)
+                recaptureRequest(activity, params, tempPair)
+            } else {
+                params.debugResult = result
+            }
+        }
+
         super.onCaptureCompleted(session, request, result)
     }
 }

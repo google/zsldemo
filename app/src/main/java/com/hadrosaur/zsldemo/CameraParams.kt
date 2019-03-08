@@ -19,6 +19,7 @@ package com.hadrosaur.zsldemo
 import android.graphics.ImageFormat
 import android.hardware.camera2.*
 import android.hardware.camera2.CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL
+import android.media.Image
 import android.media.ImageReader
 import android.media.ImageWriter
 import android.os.Handler
@@ -67,6 +68,9 @@ class CameraParams {
     //For latency measurements
     var captureStart: Long = 0
     var captureEnd: Long = 0
+
+    var debugImage: Image? = null
+    var debugResult: TotalCaptureResult? = null
 }
 
 fun setupCameraParams(activity: MainActivity, params: CameraParams) {
@@ -106,8 +110,8 @@ fun setupCameraParams(activity: MainActivity, params: CameraParams) {
         //Get image capture sizes
         val map = characteristics?.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
         if (map != null) {
-            Logd("Input formats: " + Arrays.toString(map.inputFormats))
-            Logd("Output formats: " + Arrays.toString(map.outputFormats))
+//            Logd("Input formats: " + Arrays.toString(map.inputFormats))
+//            Logd("Output formats: " + Arrays.toString(map.outputFormats))
 
             maxSize = Collections.max(
                 Arrays.asList(*map.getOutputSizes(ImageFormat.PRIVATE)),
@@ -127,13 +131,13 @@ fun setupCameraParams(activity: MainActivity, params: CameraParams) {
                 Arrays.asList(*map.getOutputSizes(ImageFormat.JPEG)),
                 CompareSizesByArea())
 
-            Logd("Max width: " + maxSize.width + " Max height: " + maxSize.height)
-            Logd("Min width: " + minSize.width + " Min height: " + minSize.height)
+//            Logd("Max width: " + maxSize.width + " Max height: " + maxSize.height)
+//            Logd("Min width: " + minSize.width + " Min height: " + minSize.height)
 
-            for (size in map.getOutputSizes(ImageFormat.PRIVATE)) {
+/*            for (size in map.getOutputSizes(ImageFormat.PRIVATE)) {
                 Logd("Supported size: " + size.width + "x" + size.height)
             }
-
+*/
             setupImageReaders(activity, params)
         } //if map != null
 
@@ -147,8 +151,11 @@ fun setupImageReaders(activity: MainActivity, params: CameraParams) {
         params.privateImageReader?.close()
         params.recaptureImageWriter?.close()
 
-//        jpegImageReader = ImageReader.newInstance(maxJpegSize.width, maxJpegSize.height,
+//                jpegImageReader = ImageReader.newInstance(3264, 2448,
 //            ImageFormat.JPEG, /*maxImages*/CIRCULAR_BUFFER_SIZE + 1)
+
+//        privateImageReader = ImageReader.newInstance(3264, 2448,
+//            ImageFormat.PRIVATE, /*maxImages*/CIRCULAR_BUFFER_SIZE + 1)
 
         jpegImageReader = ImageReader.newInstance(maxJpegSize.width, maxJpegSize.height,
             ImageFormat.JPEG, /*maxImages*/CIRCULAR_BUFFER_SIZE + 1)

@@ -21,6 +21,7 @@ import android.hardware.camera2.TotalCaptureResult
 import android.media.Image
 import android.util.Log
 import com.hadrosaur.zsldemo.CameraController.recaptureRequest
+import com.hadrosaur.zsldemo.CameraController.stopRepeating
 import com.hadrosaur.zsldemo.MainActivity.Companion.Logd
 
 class ZSLPair (val image: Image, val result: TotalCaptureResult){
@@ -49,12 +50,14 @@ class ZSLCoordinator {
     }
 
     fun capturePhoto(activity: MainActivity, params: CameraParams) {
+//stopRepeating(params)
         val bestPair: ZSLPair? = getBestFrame()
 
 //        listTimestamps()
 
         if (bestPair != null) {
-            Logd("Found a good image/result pair. Doing recapture and saving to disk!")
+//            Logd("Found a good image/result pair. Doing recapture and saving to disk!")
+            Logd("Doing recapture. Timestamp Image: " + bestPair.image.timestamp + ", timestamp Result: " + bestPair.result.get(CaptureResult.SENSOR_TIMESTAMP))
             recaptureRequest(activity, params, bestPair)
 
             //Now remove the bestPair from the buffer so we don't try to access the image again
