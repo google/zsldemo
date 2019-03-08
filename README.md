@@ -23,10 +23,10 @@ buffer is chosen, sent through the camera device for hardware processing and enc
 
 ## Technique
 When the global capture session is created three output streams and one input stream are created:
-[output] preview TextureView to show camera preview
-[output] full-quality private format image reader -> input to circular image buffer
-[output] full-quality jpeg format image reader -> final, reprocessed image
-[input] full-quality private format image writer -> selected image from buffer for reprocessing to create final jpeg output 
+- [output] preview TextureView to show camera preview
+- [output] full-quality private format image reader -> input to circular image buffer
+- [output] full-quality jpeg format image reader -> final, reprocessed image
+- [input] full-quality private format image writer -> selected image from buffer for reprocessing to create final jpeg output 
 
 When the user presses the shutter button, the ZSLCoordinator class looks for the “best” frame from the queue. The frame
 is returned to the camera hardware for “reprocessing” - OEM enhancements and hardware encoding to jpeg or YUV. This
@@ -40,13 +40,13 @@ The criteria for “best” frame of the 10-frame circular buffer is:
 
 ## Next Steps
 - Add “shutter” screen flash
-- Add settings with log and save/don’t save function
+- Add log on/off to settings
 - Add front/back toggle
 - If we need flash, do full capture with flash
 - Any other situation we want to do full capture?
 
 ## Notes
- - Only tested on a handful of devices
+ - Only tested on a handful of devices (HTC 10, Pixel phones)
  - This is a demonstration of one ZSL technique, do not use this code in production
 
 ## LICENSE
